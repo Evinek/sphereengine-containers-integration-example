@@ -1,4 +1,13 @@
-# Installation
+# Introduction
+
+It is the simple example of integration with Sphere Engine Containers.
+It uses pure Javascript with the JS SDK as frontend and Flask as backend.
+
+Links:
+https://sphere-engine.com/containers
+https://docs.sphere-engine.com/containers/overview
+
+# Run example
 
 1. Prepare .env
 
