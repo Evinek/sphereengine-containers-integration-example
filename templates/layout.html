@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <title>{% block title %}{% endblock %} - SECO integration</title>
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+        <nav>
+            <a href="{{ url_for('index') }}">Lessons</a>
+        </nav>
+        <div style="margin-top: 20px">
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>

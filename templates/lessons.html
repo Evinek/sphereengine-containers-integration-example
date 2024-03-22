@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block title %}Lessons{% endblock %}
+
+{% block content %}
+    {% for lesson_id, lesson in lessons.items() %}
+        <a href="{{ url_for('lesson', lesson_id=lesson_id) }}">{{ lesson.lesson_name }}</a><br />
+    {% endfor %}
+{% endblock %}

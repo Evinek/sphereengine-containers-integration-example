@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block title %}Lesson {{ lesson_id }}{% endblock %}
+
+{# Load the SDK #}
+{% block head %}
+<script>(function(d, s, id){
+    SE_BASE = "{{ SECO_URL }}";
+    SE_HTTPS = true;
+    SE = window.SE || (window.SE = []);
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = (SE_HTTPS ? "https" : "http") + "://" + SE_BASE + "/static/sdk/sdk.min.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, "script", "sphere-engine-jssdk"));
+  
+  SE.ready = function(f) {
+    if (document.readyState != "loading" && document.readyState != "interactive") f();
+    else window.addEventListener("load", f);
+  };
+</script>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ lesson.lesson_name }}</h1>
+
+    <div id="workspace-container"></div>
+
+    <script>
+        function renderWorkspace(workspaceId, workspaceToken) {
+            const workspaceContainer = document.getElementById('workspace-container');
+            workspaceContainer.innerHTML = "";
+            const workspaceDiv = document.createElement('div');
+            workspaceDiv.setAttribute('data-id', 'lesson-workspace');
+            workspaceDiv.setAttribute('data-workspace', workspaceId);
+            workspaceDiv.setAttribute('data-workspace-token', workspaceToken);
+            workspaceContainer.appendChild(workspaceDiv);
+
+            SE.ready(function() {
+                const workspace = SE.workspace('lesson-workspace');
+                // variable `workspace` is ready to use
+            });
+        }
+
+        function loadWorkspace() {
+            // Remember to handle connection problems, etc.
+
+            const workspaceContainer = document.getElementById('workspace-container');
+            workspaceContainer.innerHTML = "<h2 style='text-align: center'>Wait for the workspace...</h2>"
+
+            fetch("{{ url_for('lesson_workspace', lesson_id=lesson_id) }}", {
+                method: "POST",
+            })
+                .then((response) => response.json())
+                .then((json) => {
+                    // If an error occurs, retry after 3 seconds.
+                    if (json.error) {
+                        setTimeout(() => {
+                            loadWorkspace();
+                        }, 3000);
+                        return;
+                    }
+
+                    // Render the workspace
+                    renderWorkspace(json.workspace.id, json.workspace.workspace_token);
+                });
+        }
+
+        (function() {
+            loadWorkspace();
+        })();
+    </script>
+
+    <style>
+        #workspace-container {
+            width: 80vw;
+            height: 70vh;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+        }
+    </style>
+{% endblock %}
